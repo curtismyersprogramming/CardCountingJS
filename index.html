@@ -32,9 +32,8 @@
                 <img src="assets/png/10_of_clubs.png" alt="10 of clubs">
 
             </section>
-            <section class="player-area">
-                <img src="assets/png/2_of_clubs.png" alt="2 of clubs">
-                <img src="assets/png/10_of_clubs.png" alt="10 of clubs">
+            <section class="player-area" id="playerCardArea">
+
 
             </section>
 
@@ -50,7 +49,9 @@
 
                 <div class="info-area">
                     <div class="info-bar">
-                        <div class="grid-item">Dealers Hand:19 </div>
+                        <div class="grid-item">Dealers Hand:<p id="dealersHandValue">0</p>
+                        </div>
+
                         <div class="grid-item-feedback">Select an option to recieve feedback</div>
                         <div class="grid-item-bank">
 
@@ -62,15 +63,15 @@
 
                         </div>
                         <div class="grid-item">
-                            Running Count: +2<br>
+                            Running Count: <a id="runningCount">0</a><br>
                             Cards remaining: 212<br>
                             True Count: +1
 
                         </div>
-                        <div class="grid-item">Dealers Hand:19</div>
+                        <div class="grid-item">Players Hand:<p id="playersHandValue">0</p>
 
+                        </div>
                     </div>
-                </div>
         </main>
 
     </div>
