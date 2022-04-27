@@ -117,7 +117,7 @@ function aceCheckPlayer(playerHand) {
         if (playerHand[i].Value == "A") {
             playerTotal -= 10;
             playerAceCount -= 1;
-            console.log(playerTotal);
+
         }
 }
 
@@ -139,6 +139,8 @@ function gameStart() {
     hitB.disabled = false;
     standB.disabled = false;
     doubleB.disabled = false;
+    playerAceCount = 0;
+    dealerAceCount = 0;
 
 
     cardsRemainingUpdate();
@@ -163,7 +165,7 @@ function gameStart() {
         document.getElementById("playerCardArea").append(cardCountValue); //card image is added to the page
         cardsDealtPlayer++; //incriment how many cards have been dealt 
         if (playerTotal > 21 && playerAceCount >= 1) {
-            aceCheck(playersHand)
+            aceCheckPlayer(playersHand)
         }
 
         PlayerHandUpate(playerTotal);
@@ -193,7 +195,7 @@ function gameStart() {
     cardCountValue = tempCard.Count;
     document.getElementById("dealerCardArea").append(cardCountValue); //card image is added to the page
     if (dealerTotal > 21 && dealerAceCount >= 1) {
-        aceCheck(dealersHand)
+        aceCheckDealer(dealersHand)
     }
     cardsDealtDealer++; //incriment how many cards have been dealt 
     DealerHandUpate(dealerTotal);
@@ -247,7 +249,7 @@ function gameStart() {
 
         cardsDealtPlayer++; //incriment how many cards have been dealt 
         if (playerTotal > 21 && playerAceCount >= 1) {
-            aceCheck(playersHand)
+            aceCheckPlayer(playersHand)
         }
         PlayerHandUpate(playerTotal);
 
@@ -304,7 +306,9 @@ function gameStart() {
         document.getElementById("playerCardArea").append(cardImage); //card image is added to the page
         cardCountValue = tempCard.Count;
         document.getElementById("playerCardArea").append(cardCountValue); //card image is added to the page
-
+        if (playerTotal > 21 && playerAceCount >= 1) {
+            aceCheckDealer(playersHand)
+        }
         cardsDealtPlayer++; //incriment how many cards have been dealt 
         PlayerHandUpate(playerTotal);
         cardsRemainingUpdate();
@@ -326,7 +330,7 @@ async function Dealer(dealerTotal, dealersHand, dealerAceCount, hiddenCard) {
     let cardImage = document.createElement("img"); //create card image element
     cardImage.src = "assets/png/" + hiddenCard.Value + "_of_" + hiddenCard.Suit + ".png"; //get card image asset of temp card
     if (hiddenCard.Value == "A") {
-        playerAceCount++;
+        dealerAceCount++;
     }
     dealersHand.push(hiddenCard); //push temp card into players hand 
     dealerTotal += valueCheck(dealersHand, cardsDealtDealer); //player total is updated with correct value
@@ -337,7 +341,7 @@ async function Dealer(dealerTotal, dealersHand, dealerAceCount, hiddenCard) {
     document.getElementById("dealerCardArea").append(cardCountValue); //card image is added to the page
     cardsDealtDealer++; //incriment how many cards have been dealt 
     if (dealerTotal > 21 && dealerAceCount >= 1) {
-        aceCheck(dealersHand)
+        aceCheckDealer(dealersHand)
     }
     DealerHandUpate(dealerTotal);
     console.log(dealerTotal);
@@ -356,18 +360,22 @@ async function Dealer(dealerTotal, dealersHand, dealerAceCount, hiddenCard) {
         let cardImage = document.createElement("img"); //create card image element
         tempCard = gameShoe.pop(); //give the player their first card
         if (tempCard.Value == "A") {
-            dealerAceCountAceCount++;
+            dealerAceCount++;
         }
+
         cardImage.src = "assets/png/" + tempCard.Value + "_of_" + tempCard.Suit + ".png"; //get card image asset of temp card
         dealersHand.push(tempCard); //push temp card into players hand 
+        if (dealerAceCount >= 1) {
+            aceCheckDealer(dealersHand)
+        }
         dealerTotal += valueCheck(dealersHand, cardsDealtDealer); //player total is updated with correct value
         runningCount += runningCountCheck(dealersHand, cardsDealtDealer);
         runningCountIngame.innerHTML = runningCount;
         document.getElementById("dealerCardArea").append(cardImage); //card image is added to the page
         cardCountValue = tempCard.Count;
         document.getElementById("dealerCardArea").append(cardCountValue); //card image is added to the page
-        if (dealerTotalTotal > 21 && dealerAceCount >= 1) {
-            aceCheck(dealersHand)
+        if (dealerTotal > 21 && dealerAceCount >= 1) {
+            aceCheckDealer(dealersHand)
         }
         cardsDealtDealer++; //incriment how many cards have been dealt
         DealerHandUpate(dealerTotal);
