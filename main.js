@@ -9,6 +9,8 @@ window.onload = function () {
     splitbuttons.style.display = "none";
 }
 
+
+// ADD BANKRUPT DUNCTION 
 //VARIABLES
 //Deck Creation
 let suits = ["spades", "diamonds", "clubs", "hearts"]; //All suits that will be used for the deck
@@ -25,6 +27,8 @@ let dealersHand = []; //dealers hand
 //ingame totals
 let playerTotal = 0;
 let dealerTotal = 0;
+let Bank = 1000;
+
 
 
 let playerAceCount = 0;
@@ -43,6 +47,9 @@ let tempCard;
 
 let cardCountValue = 0;
 
+let bankHoldingsP = 0;
+let bankBalanceP = 0;
+
 
 let runningCountIngame = document.getElementById("runningCount");
 let playersValueIngame = document.getElementById("playersHandValue");
@@ -52,6 +59,20 @@ let hitB = document.getElementById("hitbutton");
 let standB = document.getElementById("standbutton");
 let doubleB = document.getElementById("doublebutton");
 let cardsLeft = document.getElementById("deckRemaining");
+
+//bank 
+let bankAdd = document.getElementById("bank-up");
+let bankSub = document.getElementById("bank-down");
+let bankBet = document.getElementById("bet-value");
+let balance = document.getElementById("bankBalanceTotal");
+
+let bankHoldings = 0;
+let bankBalance = 0;
+
+let didPlayerDouble = false;
+
+
+
 
 
 const delay = ms => new Promise(res => setTimeout(res, ms));
@@ -131,6 +152,42 @@ function aceCheckDealer(dealersHand) {
 }
 
 
+
+bankSub.onclick = function () {
+    let bankBalance = balance.innerHTML;
+    let bet = bankBet.innerHTML;
+    let betparse = parseInt(bet);
+    let balanceparse = parseInt(bankBalance);
+    let decrease = betparse - 10;;
+
+    if (betparse == 0) {
+        return;
+    }
+    console.log("hello");
+    bankBet.innerHTML = decrease;
+
+
+}
+
+bankAdd.onclick = function () {
+    let bankBalance = balance.innerHTML;
+    let bet = bankBet.innerHTML;
+    let betparse = parseInt(bet);
+    let balanceparse = parseInt(bankBalance);
+    let increase = betparse + 10;;
+
+    if (increase > balanceparse) {
+        return;
+    }
+    console.log("hello");
+    bankBet.innerHTML = increase;
+
+
+
+
+}
+
+
 //GAME START EVENT - complete
 document.getElementById("dealbutton").addEventListener("click", gameStart)
 
@@ -139,8 +196,20 @@ function gameStart() {
     hitB.disabled = false;
     standB.disabled = false;
     doubleB.disabled = false;
+    bankAdd.disabled = true;
+    bankSub.disabled = true;
+
     playerAceCount = 0;
     dealerAceCount = 0;
+    bankHoldings = bankBet.innerHTML;
+    bankBalance = balance.innerHTML;
+
+    bankHoldingsP = parseInt(bankHoldings);
+    bankBalanceP = parseInt(bankBalance);
+
+    t = bankBalanceP - bankHoldingsP;
+    balance.innerHTML = t;
+
 
 
     cardsRemainingUpdate();
@@ -290,8 +359,19 @@ function gameStart() {
 
     doubleB.onclick = function () {
         //Adds a new card to the players hand 
-        playerFirstTurn = false;
+        playerFirstTurn++;
+        didPlayerDouble = true;
         let action = "double";
+        bankHoldings = bankBet.innerHTML;
+        bankBalance = balance.innerHTML;
+
+        bankHoldingsP = parseInt(bankHoldings);
+        bankBalanceP = parseInt(bankBalance);
+
+        t = bankBalanceP - bankHoldingsP;
+        balance.innerHTML = t;
+        // t = bankBalanceP - bankHoldingsP;
+        // balance.innerHTML = t;
         playerChoiceFeedback(action);
         let cardImage = document.createElement("img"); //create card image element
         tempCard = gameShoe.pop(); //give the player their first card
@@ -392,12 +472,18 @@ async function Dealer(dealerTotal, dealersHand, dealerAceCount, hiddenCard) {
     // compare scores once dealer is over 17 to get game outcome - working on - need to change to actual outcomes but currently works
     let gameResult = resultCheck(dealerTotal, playerTotal);
     if (gameResult == 2) {
-        console.log("d win");
+        console.log("dealer win");
     } else if (gameResult == 1) {
-        console.log("p win");
+        if (didPlayerDouble == true) {
+            balance.innerHTML = bankBalanceP + bankHoldingsP + bankHoldingsP + bankHoldingsP;
+        } else {
+            balance.innerHTML = bankBalanceP + bankHoldingsP;
+        }
     } else if (gameResult == 3) {
-        console.log("push");
+        balance.innerHTML = bankBalancep;
     }
+
+
 
 
     //reset ready for next hand
@@ -414,6 +500,8 @@ async function Dealer(dealerTotal, dealersHand, dealerAceCount, hiddenCard) {
     standbuttons.style.display = "none";
     splitbuttons.style.display = "none";
     dealbutton.style.display = "block";
+    doubleB.style.opacity = "100%";
+
     document.getElementById("dealbutton").addEventListener("click", gameStart)
 
 
@@ -450,9 +538,13 @@ async function resetHand() {
     playerTotalVar.innerHTML = playerTotal;
     hasCutCardBeenPassed();
     trueCountUpdate();
+    didPlayerDouble = false;
 
 
 
+
+    bankAdd.disabled = false;
+    bankSub.disabled = false;
 
 }
 
@@ -545,7 +637,7 @@ function resultCheck(dealerTotal, playerTotal) {
 
     if (playerTotal > dealerTotal && playerTotal <= 21) {
         return playerWin;
-    } else if (playerTotal > 21 && dealerTotal > 21 && playerTotal == dealerTotal) {
+    } else if (playerTotal <= 21 && dealerTotal <= 21 && playerTotal == dealerTotal) {
         return push;
 
     } else if (playerTotal <= 21 && dealerTotal > 21) {
