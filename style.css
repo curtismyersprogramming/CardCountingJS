@@ -163,11 +163,17 @@ button {
     border-radius: 10px;
     font-family: Montserrat;
     color: white;
-    margin: 5px;
+    margin: 10px;
     border: none;
 }
 
-
+.bank-up,
+.bank-down {
+    width: 30px;
+    height: 30px;
+    background-color: black;
+    border-radius: 10px;
+}
 
 .button-area {
     display: flex;

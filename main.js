@@ -58,6 +58,7 @@ let playerFeedback = document.getElementById("playerFeedback");
 let hitB = document.getElementById("hitbutton");
 let standB = document.getElementById("standbutton");
 let doubleB = document.getElementById("doublebutton");
+let splitB = document.getElementById("splitbutton");
 let cardsLeft = document.getElementById("deckRemaining");
 
 //bank 
@@ -91,7 +92,7 @@ function getDeck() //creates a deck by looping through suits and values creating
 
         for (let i = 0; i < suits.length; i++) {
             for (let x = 0; x < values.length; x++) {
-                let card = { Value: values[x], Suit: suits[i], Count: 0 }; //INCLUDE WHICH DECK THE CARD COMES FROM?
+                let card = { Value: values[x], Suit: suits[i], Count: 0 };
 
                 //ASSIGNING CARD A COUNT VALUE
 
@@ -336,7 +337,7 @@ function gameStart() {
         if (playerTotal >= 21) { // if player total is greater than or equal to 21
             // disabled ability to use any buttons until dealers turn is over
             hitB.disabled = true;
-            standB.disabled = true;
+            // standB.disabled = true;
             //remove the image of the back of the card 
             document.getElementById("back").remove(cardImage);
             //start the dealers turn with the dealers information
@@ -397,6 +398,60 @@ function gameStart() {
         document.getElementById("back").remove(cardImage);
         Dealer(dealerTotal, dealersHand, dealerAceCount, hiddenCard);
     }
+
+}
+
+splitB.onclick = function () {
+    let action = "split";
+    // playerChoiceFeedback(action);
+
+    //double bet 
+    // bankHoldings = bankBet.innerHTML;
+    // bankBalance = balance.innerHTML;
+
+    // bankHoldingsP = parseInt(bankHoldings);
+    // bankBalanceP = parseInt(bankBalance);
+
+    // t = bankBalanceP - bankHoldingsP;
+    // balance.innerHTML = t;
+
+    let hand2Card = playersHand[1];
+    playersHand.splice(1, 1);
+    playersHand2.push(hand2Card);
+
+
+    // NEW HAND 
+    document.getElementById('playerCardArea').innerHTML = '';
+    let dealerFirstCard = playersHand[0];
+    let firstcardImage = document.createElement("img"); //create card image element
+    firstcardImage.src = "assets/png/" + dealerFirstCard.Value + "_of_" + dealerFirstCard.Suit + ".png";
+    firstcardImage.setAttribute("id", "card")
+    document.getElementById("playerCardArea").append(firstcardImage);
+    let cardImage = document.createElement("img"); //create card image element
+    cardImage.setAttribute("id", "card")
+    tempCard = gameShoe.pop(); //Hold value in a temporary card
+    if (tempCard.Value == "A") {
+        playerAceCount++;
+    }
+    cardImage.src = "assets/png/" + tempCard.Value + "_of_" + tempCard.Suit + ".png"; //get card image asset of temp card
+    playersHand.push(tempCard); //push temp card into players hand - player now has 1 card
+
+    document.getElementById("playerCardArea").append(cardImage);
+
+    cardsDealtPlayer = 0;
+    playerTotal = 0;
+    for (let i = 0; i < 2; i++) {
+        playerTotal += valueCheck(playersHand, cardsDealtPlayer);
+        cardsDealtPlayer++;
+    }
+
+    console.log(playersHand);
+    console.log(playersHand2);
+    console.log(playerTotal);
+
+
+
+
 
 }
 
@@ -634,7 +689,6 @@ function resultCheck(dealerTotal, playerTotal) {
     let playerWin = 1;
     let dealerWin = 2;
     let push = 3;
-
     if (playerTotal > dealerTotal && playerTotal <= 21) {
         return playerWin;
     } else if (playerTotal <= 21 && dealerTotal <= 21 && playerTotal == dealerTotal) {
@@ -737,7 +791,10 @@ function buttonActive(splits) {
 
     if (splits == false) {
         splitbuttons.style.opacity = '25%';
+        splitB.disabled = true;
 
+    } else {
+        splitB.disabled = false;
     }
 
 
@@ -957,6 +1014,99 @@ function playerChoiceFeedback(playerMove) {
         else if (playerTotal >= 17 && dealerTotal >= 2) {
             playerFeedback.innerHTML = "You Stood<br> Correct choice: Stand"
             playerFeedbackBackground.style.background = "green";
+        }
+
+    }
+
+    //STAND
+    if (playerMove == "double") {
+        if (playerTotal <= 8 && dealerTotal > 2) {
+            playerFeedback.innerHTML = "You Doubled Down<br> Correct choice: Hit"
+            playerFeedbackBackground.style.background = "red";
+        }
+        //9 - 2,7,8,9,10,11 - HIT
+        else if (playerTotal == 9 && dealerTotal == 2 || playerTotal == 9 && dealerTotal == 7 || playerTotal == 9 && dealerTotal == 8 || playerTotal == 9 && dealerTotal == 9 || playerTotal == 9 && dealerTotal == 10 || playerTotal == 9 && dealerTotal == 11) {
+            playerFeedback.innerHTML = "You Doubled Down <br> Correct choice: Hit"
+            playerFeedbackBackground.style.background = "red";
+        }
+        //9 - 3,4,5,6 - DOUBLE DOWN
+        else if (playerTotal == 9 && dealerTotal == 3 || playerTotal == 9 && dealerTotal == 4 || playerTotal == 9 && dealerTotal == 5 || playerTotal == 9 && dealerTotal == 6) {
+            playerFeedback.innerHTML = "You Doubled Down<br> Correct choice: Double Down"
+            playerFeedbackBackground.style.background = "green";
+        }
+        //10 - 10,11 - HIT
+        else if (playerTotal == 10 && dealerTotal == 10 || playerTotal == 10 && dealerTotal == 11) {
+            playerFeedback.innerHTML = "You Doubled Down <br> Correct choice: Hit"
+            playerFeedbackBackground.style.background = "red";
+        }
+        //10 - 2,3,4,5,6,7,8,9 - DOUBLE DOWN
+        else if (playerTotal == 10 && dealerTotal == 2 || playerTotal == 10 && dealerTotal == 3 || playerTotal == 10 && dealerTotal == 4 || playerTotal == 10 && dealerTotal == 5 || playerTotal == 10 && dealerTotal == 6 || playerTotal == 10 && dealerTotal == 7 || playerTotal == 10 && dealerTotal == 8 || playerTotal == 10 && dealerTotal == 9) {
+            playerFeedback.innerHTML = "You Doubled Down<br> Correct choice: Double Down"
+            playerFeedbackBackground.style.background = "green";
+
+        }
+        //11 - everything - Double
+        else if (playerTotal == 11 && dealerTotal == 2 || playerTotal == 11 && dealerTotal == 3 || playerTotal == 11 && dealerTotal == 4 || playerTotal == 11 && dealerTotal == 5 || playerTotal == 11 && dealerTotal == 6 || playerTotal == 11 && dealerTotal == 7 || playerTotal == 11 && dealerTotal == 8 || playerTotal == 11 && dealerTotal == 9 || playerTotal == 11 && dealerTotal == 10 || playerTotal == 11 && dealerTotal == 11) {
+            playerFeedback.innerHTML = "You Doubled Down<br> Correct choice: Double Down"
+            playerFeedbackBackground.style.background = "green";
+        }
+        //12 - 2,3,7,8,9,10,11 = hit
+        else if (playerTotal == 12 && dealerTotal == 2 || playerTotal == 12 && dealerTotal == 3 || playerTotal == 12 && dealerTotal == 7 || playerTotal == 12 && dealerTotal == 8 || playerTotal == 12 && dealerTotal == 9 || playerTotal == 12 && dealerTotal == 10 || playerTotal == 12 && dealerTotal == 11) {
+            playerFeedback.innerHTML = "You Doubled Down <br> Correct choice: hit"
+            playerFeedbackBackground.style.background = "red";
+        }
+        //12 - 4,5,6 - stand - stand
+        else if (playerTotal == 12 && dealerTotal == 4 || playerTotal == 12 && dealerTotal == 5 || playerTotal == 12 && dealerTotal == 6) {
+            playerFeedback.innerHTML = "You Doubled Down<br> Correct choice: Stand"
+            playerFeedbackBackground.style.background = "red";
+        }
+
+        //13 - 2,3,4,5,6 - STAND
+        else if (playerTotal == 13 && dealerTotal == 2 || playerTotal == 13 && dealerTotal == 3 || playerTotal == 13 && dealerTotal == 4 || playerTotal == 13 && dealerTotal == 5 || playerTotal == 13 && dealerTotal == 6) {
+            playerFeedback.innerHTML = "You Doubled Down<br> Correct choice: Stand"
+            playerFeedbackBackground.style.background = "red";
+        }
+        //13 - 7,8,9,10,11 - hit
+        else if (playerTotal == 13 && dealerTotal == 7 || playerTotal == 13 && dealerTotal == 8 || playerTotal == 13 && dealerTotal == 9 || playerTotal == 13 && dealerTotal == 10 || playerTotal == 13 && dealerTotal == 11) {
+            playerFeedback.innerHTML = "You Doubled Down<br> Correct choice: Hit"
+            playerFeedbackBackground.style.background = "red";
+        }
+
+        //14 - 2,3,4,5,6 - STAND
+        else if (playerTotal == 14 && dealerTotal == 2 || playerTotal == 14 && dealerTotal == 3 || playerTotal == 14 && dealerTotal == 4 || playerTotal == 14 && dealerTotal == 5 || playerTotal == 14 && dealerTotal == 6) {
+            playerFeedback.innerHTML = "You Doubled Down<br> Correct choice: Stand"
+            playerFeedbackBackground.style.background = "red";
+        }
+        //14 - 7,8,9,19,11 - hit
+        else if (playerTotal == 14 && dealerTotal == 7 || playerTotal == 14 && dealerTotal == 8 || playerTotal == 14 && dealerTotal == 9 || playerTotal == 14 && dealerTotal == 10 || playerTotal == 14 && dealerTotal == 11) {
+            playerFeedback.innerHTML = "You Doubled Down <br> Correct choice: Hit"
+            playerFeedbackBackground.style.background = "red";
+        }
+
+        //15 - 2,3,4,5,6 - STAND
+        else if (playerTotal == 15 && dealerTotal == 2 || playerTotal == 15 && dealerTotal == 3 || playerTotal == 15 && dealerTotal == 4 || playerTotal == 15 && dealerTotal == 5 || playerTotal == 15 && dealerTotal == 6) {
+            playerFeedback.innerHTML = "You Doubled Down<br> Correct choice: Stand"
+            playerFeedbackBackground.style.background = "red";
+        }
+        //15 - 7,8,9,10,11 - hit
+        else if (playerTotal == 15 && dealerTotal == 7 || playerTotal == 15 && dealerTotal == 8 || playerTotal == 15 && dealerTotal == 9 || playerTotal == 15 && dealerTotal == 10 || playerTotal == 15 && dealerTotal == 11) {
+            playerFeedback.innerHTML = "You Doubled Down <br> Correct choice: Hit"
+            playerFeedbackBackground.style.background = "red";
+        }
+        //16 - 2,3,4,5,6 - STAND
+        else if (playerTotal == 16 && dealerTotal == 2 || playerTotal == 16 && dealerTotal == 3 || playerTotal == 16 && dealerTotal == 4 || playerTotal == 16 && dealerTotal == 5 || playerTotal == 16 && dealerTotal == 6) {
+            playerFeedback.innerHTML = "You Doubled Down<br> Correct choice: Stand"
+            playerFeedbackBackground.style.background = "red";
+        }
+        //16 - 7,8,9,10,11 - hit
+        else if (playerTotal == 16 && dealerTotal == 7 || playerTotal == 16 && dealerTotal == 8 || playerTotal == 16 && dealerTotal == 9 || playerTotal == 16 && dealerTotal == 10 || playerTotal == 16 && dealerTotal == 11) {
+            playerFeedback.innerHTML = "You Doubled Down <br> Correct choice: Hit"
+            playerFeedbackBackground.style.background = "red";
+        }
+        //17 - stand everything 
+        else if (playerTotal >= 17 && dealerTotal >= 2) {
+            playerFeedback.innerHTML = "You Doubled Down<br> Correct choice: Stand"
+            playerFeedbackBackground.style.background = "red";
         }
 
     }
